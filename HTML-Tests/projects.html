@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tegameno Iyambo - Portfolio Project</title>
+    <style>
+        /* Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #e2e8f0;
+            /* Cosmic space matrix gradient: black, grey, deep indigo/purple, and dark blue accents */
+            background: linear-gradient(135deg, #060814, #0b112c, #1a103c, #0d0d11);
+            overflow-x: hidden;
+        }
+
+        /* Canvas background overlay */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Portfolio Wrapper */
+        .portfolio-container {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Project Section Styling - Styled with dark purple, deep blue, grey, and fine white borders */
+        .project-section {
+            background: rgba(15, 12, 30, 0.75); /* Dark Purple/Black base */
+            border: 1px solid rgba(255, 255, 255, 0.08); /* Crisp subtle white border */
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.05); /* Soft purple glow */
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-section:hover {
+            border-color: rgba(167, 139, 250, 0.4); /* Neon Purple/Lavender highlight */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 40px rgba(139, 92, 246, 0.15);
+        }
+
+        /* Collapsible Header/Trigger */
+        .project-trigger {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            cursor: pointer;
+            user-select: none;
+            background: rgba(6, 8, 20, 0.5); /* Near black/grey split */
+        }
+
+        .project-title-area h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff; /* Bright white text */
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .project-title-area p {
+            font-size: 14px;
+            color: #a78bfa; /* Vibrant Purple accent text */
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toggle-icon {
+            font-size: 20px;
+            color: #cbd5e1; /* Clear grey/white */
+            transition: transform 0.3s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Content Area (Hidden by default) */
+        .project-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .project-content-inner {
+            padding: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 15px;
+            line-height: 1.7;
+            color: #cbd5e1; /* Balanced layout grey text */
+        }
+
+        /* Expanded State Utilities */
+        .project-section.is-expanded .project-content {
+            max-height: 4000px; 
+        }
+
+        .project-section.is-expanded .toggle-icon {
+            transform: rotate(45deg);
+            background: rgba(139, 92, 246, 0.2); /* Soft purple active fill */
+            color: #c084fc;
+        }
+
+        /* Markdown-style Layout Within Content */
+        h3 {
+            font-size: 18px;
+            color: #ffffff; /* Stark white headers */
+            margin: 28px 0 12px 0;
+            font-weight: 600;
+            border-left: 3px solid #8b5cf6; /* Electric Purple line indicator */
+            padding-left: 12px;
+        }
+        
+        h3:first-of-type {
+            margin-top: 0;
+        }
+
+        h4 {
+            font-size: 15px;
+            color: #f1f5f9;
+            margin: 16px 0 8px 0;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        strong {
+            color: #ffffff; /* High contrast details */
+        }
+
+        code {
+            font-family: monospace;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #f472b6; /* Vivid layout accent pink/purple code blocks */
+            font-size: 13px;
+        }
+
+        blockquote {
+            background: rgba(139, 92, 246, 0.08); /* Translucent purple alert fill */
+            border-left: 3px solid #3b82f6; /* Electric Blue accent highlight */
+            padding: 12px 16px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* Table Styling with Deep Blue and Black Accents */
+        .table-container {
+            overflow-x: auto;
+            margin: 24px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #090d1a; /* Dark blue-black th background */
+            color: #ffffff;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(11, 17, 44, 0.4); /* Translucent deep blue-grey row */
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Buttons & Action Links */
+        .btn-container {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #8b5cf6; /* Vibrant Purple Button */
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #a78bfa;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(59, 130, 246, 0.1); /* Translucent Blue accent */
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        /* Interactive styling for math items */
+        .math {
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+            font-weight: bold;
+            color: #60a5fa; /* Blue highlight color for formulas */
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+
+    <div class="portfolio-container">
+        
+        <div class="project-section" id="section-mineshield">
+            <div class="project-trigger" onclick="toggleSection('section-mineshield')">
+                <div class="project-title-area">
+                    <h2>MineShield: UI/UX & Component Engineering</h2>
+                    <p>Semester Project • UI/UX Lead & Frontend Developer</p>
+                </div>
+                <div class="toggle-icon">+</div>
+            </div>
+            
+            <div class="project-content">
+                <div class="project-content-inner">
+                    
+                    <h3>💻 1. Executive Summary</h3>
+                    <p>As the UI/UX Lead for <strong>MineShield</strong>, I was responsible for the end-to-end visual and interactive architecture of the application—translating complex safety requirements into production-ready React Native components. My work directly supports core functional features for three specialized roles: <strong>Workers</strong>, <strong>Supervisors</strong>, and <strong>Visitors</strong>.</p>
+                    <ul>
+                        <li><strong>Key Deliverables:</strong> Fully realized Figma Design System, custom Cross-Platform Component Library, Global Core Theme Engine, and Technical System Documentation.</li>
+                    </ul>
+
+                    <h3>🎨 2. Figma Design System & Iteration</h3>
+                    
+                    <h4>2.1 Environmental Design Factors</h4>
+                    <p>Designing for a harsh mining environment meant optimizing for poor lighting, gloved hands, and heavy display glare.</p>
+                    <ul>
+                        <li><strong>Touch Targets:</strong> Expanded all critical interactive targets to a minimum of <span class="math">64 &times; 64 dp</span> to ensure seamless accessibility for workers wearing heavy protective gear.</li>
+                        <li><strong>The Contrast Pivot:</strong> Early field tests revealed that a dark interface caused severe glare under direct outdoor light. I rapidly refactored the application's base canvas to a high-visibility light theme (<code>#F3F6FC</code>) to maximize readability.</li>
+                        <li><strong>Safety Fail-Safes:</strong> Redesigned the SOS trigger with a <strong>3-second press-and-hold</strong> gesture and adjusted the automated fall-detection timeout modal to <strong>10 seconds</strong> complete with a highly visible countdown progress bar.</li>
+                    </ul>
+
+                    <h4>2.2 Interactive High-Fidelity Prototypes</h4>
+                    <p>I engineered interconnected clickable user journeys across <strong>20+ unique screen states</strong>, mapping out critical cross-role pipelines:</p>
+                    <blockquote>
+                        <strong>Core Workflow Example:</strong> Worker logs a hazard via <code>ReportHazardScreen</code> <span class="math">&rarr;</span> Live Firestore sync <span class="math">&rarr;</span> Instantly populates active marker on the Supervisor’s <code>LiveMapScreen</code>.
+                    </blockquote>
+
+                    <h3>⚙️ 3. Core Architecture & Code Implementation</h3>
+                    <p>All production components are written in React Native (Expo) and hook directly into a central context engine. To protect safety-critical UX, <strong>semantic colors (Critical Red, Warning Amber, Safe Green) remain completely fixed</strong> across all visual overrides.</p>
+                    
+                    <h4>3.1 The Dynamic Theme Engine</h4>
+                    <p><code>src/contexts/ThemeContext.js</code> manages global spacing tokens, border radii, and a four-tier theme system saved persistently via <code>AsyncStorage</code>.</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Theme Mode</th>
+                                    <th>Canvas Base</th>
+                                    <th>Card Surface</th>
+                                    <th>Active Accent</th>
+                                    <th>Primary Text</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Light</strong></td>
+                                    <td><code>#F3F6FC</code></td>
+                                    <td><code>#FFFFFF</code></td>
+                                    <td><code>#D4833D</code></td>
+                                    <td><code>#212B36</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Dark</strong></td>
+                                    <td><code>#101926</code></td>
+                                    <td><code>#182536</code></td>
+                                    <td><code>#EBA350</code></td>
+                                    <td><code>#DCE2EB</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Warm</strong></td>
+                                    <td><code>#F4EEE6</code></td>
+                                    <td><code>#FFFFFF</code></td>
+                                    <td><code>#8D5B38</code></td>
+                                    <td><code>#2E2621</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Night</strong></td>
+                                    <td><code>#0D1B26</code></td>
+                                    <td><code>#152736</code></td>
+                                    <td><code>#DEA14E</code></td>
+                                    <td><code>#D2DCE6</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4>3.2 Key Reusable UI Components</h4>
+                    <ul>
+                        <li><strong><code>Button.js</code>:</strong> Features strict WCAG-compliant touch layouts (<span class="math">&ge; 48 &times; 48 dp</span>), an integrated async loading layout, and adaptive state variants (<code>primary</code>, <code>secondary</code>, <code>danger</code>, <code>warning</code>, <code>outline</code>).</li>
+                        <li><strong><code>Card.js</code>:</strong> Built as an explicit semantic layout container. While default states adopt standard theme surfaces, explicit safety alerts strictly overwrite containers with uncompromised absolute fills (<code>danger</code> <span class="math">&rarr;</span> <code>#D46B5A</code>).</li>
+                        <li><strong><code>Header.js</code>:</strong> Formats structured application navigation, supplying deep layout slot handling for contextual back-navigation, views, and action indicators.</li>
+                    </ul>
+
+                    <h3>📊 4. Functional Traceability Matrix</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Requirement ID</th>
+                                    <th>System Target</th>
+                                    <th>Design & UI/UX Execution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>FR‑001 / 002</strong></td>
+                                    <td>Auth Pipelines</td>
+                                    <td>Designed targeted role-based login interfaces feeding into adaptive application structures.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FR‑003 / 015</strong></td>
+                                    <td>Hazard Ingestion</td>
+                                    <td>Created the native form workflow, standard asset media picker, and quick-select severity tokens.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FR‑005 / 006</strong></td>
+                                    <td>Live Map Engine</td>
+                                    <td>Established the distinct green/yellow/red overlay matrices for active geospatial hazard fields.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FR‑007</strong></td>
+                                    <td>Fall Detection</td>
+                                    <td>Built the automated intercept countdown modal featuring global override triggers.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FR‑008</strong></td>
+                                    <td>Noise Telemetry</td>
+                                    <td>Implemented the real-time sensor array dashboard complete with contextual alert color bars.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FR‑009 / 010</strong></td>
+                                    <td>SOS Broadcasts</td>
+                                    <td>Engineered the isolated, instant-action emergency layout layer and global push banners.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FR‑011 / 013</strong></td>
+                                    <td>Supervisor Suite</td>
+                                    <td>Formatted comprehensive data visualizations (Bar, Line, and Pie Chart wrappers) matching brand accents.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>🤝 5. Engineering Leadership & Technical Challenges</h3>
+                    <h4>Overcoming Fragmented Styling Styles</h4>
+                    <p><strong>The Problem:</strong> Developers on backend and logic tracks initially bypassed UI layouts by hardcoding miscellaneous styling rules directly into core functional loops.</p>
+                    <p><strong>The Solution:</strong> I established a strict project gatekeeping workflow: <em>No component pull requests were merged into production without an approved, mapped Figma design token.</em> I then authored extensive markdown specifications (<code>DESIGN_SYSTEM.md</code> and `UI_COMPONENTS.md`), serving as a central dictionary that smoothed out team integration.</p>
+
+                    <div class="btn-container">
+                        <a href="../DOCS/MineShield_Doc.pdf" target="_blank" class="btn btn-primary">View Full Technical Documentation (PDF) &rarr;</a>
+                        <a href="https://www.figma.com/design/grItLPUGBHKbbvTEcvasPH/Mine-Shield?node-id=0-1&t=SvsNRWHne8udo77r-1" target="_blank" class="btn btn-secondary">Explore Figma Prototypes</a>
+                        <a href="https://github.com/raunanehale06-png/UNAM-I3691CP-Group-16-Mineshield" target="_blank" class="btn btn-secondary">Explore GitHub Repository</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="project-section" id="section-bitlink">
+            <div class="project-trigger" onclick="toggleSection('section-bitlink')">
+                <div class="project-title-area">
+                    <h2>Bitlink: Core Networking Architecture</h2>
+                    <p>Project Framework • Pending Configuration</p>
+                </div>
+                <div class="toggle-icon">+</div>
+            </div>
+            <div class="project-content">
+                <div class="project-content-inner">
+                    <h3>Project Profile coming soon...</h3>
+                    <p>Integration parameters and summary assets for the Bitlink architecture pipeline are currently being configured.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* 1. Collapsible Toggle Controller */
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            const content = el.querySelector('.project-content');
+            
+            if (el.classList.contains('is-expanded')) {
+                el.classList.remove('is-expanded');
+                content.style.maxHeight = "0px";
+            } else {
+                document.querySelectorAll('.project-section').forEach(section => {
+                    section.classList.remove('is-expanded');
+                    section.querySelector('.project-content').style.maxHeight = "0px";
+                });
+                
+                el.classList.add('is-expanded');
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        /* 2. Interactive Starfield Backdrop Logic */
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+
+        let stars = [];
+        const numStars = 120; 
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.2 + 0.4,
+                    speedX: (Math.random() - 0.5) * 0.3,
+                    speedY: (Math.random() * 0.2) + 0.1, 
+                    opacity: Math.random() * 0.6 + 0.4
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < stars.length; i++) {
+                let s = stars[i];
+
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+                ctx.fill();
+
+                s.x += s.speedX;
+                s.y += s.speedY;
+
+                if (s.y > canvas.height) {
+                    s.y = 0;
+                    s.x = Math.random() * canvas.width;
+                }
+                if (s.x < 0) s.x = canvas.width;
+                else if (s.x > canvas.width) s.x = 0;
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tegameno Iyambo // Portfolio Matrix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body, html {
+            background-color: #03020d;
+            background-image: radial-gradient(circle at 50% 50%, #0d092b 0%, #03020d 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* Interactive Starfield Layer */
+        #space-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ================= DECORATIVE PROPS ================= */
+        .space-prop, .hamburger-menu {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .space-prop {
+            position: absolute;
+            z-index: 2;
+        }
+
+        .prop-canva-star-1 {
+            top: 22%;
+            right: 32%;
+            width: 50px;
+            height: 50px;
+        }
+
+        .prop-canva-star-2 {
+            bottom: 8%;
+            left: 6%;
+            width: 35px;
+            height: 35px;
+        }
+
+        .prop-ring-planet {
+            bottom: -3%;
+            right: -2%;
+            width: 140px;
+            height: 140px;
+        }
+
+        .canvas-active .prop-canva-star-1 { animation: pulseStar 4s ease-in-out infinite alternate; }
+        .canvas-active .prop-canva-star-2 { animation: pulseStar 5s ease-in-out infinite alternate-reverse; }
+        .canvas-active .prop-ring-planet { animation: floatPlanet 12s ease-in-out infinite; }
+
+        @keyframes pulseStar {
+            0% { transform: scale(0.85); opacity: 0.5; }
+            100% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        @keyframes floatPlanet {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        /* ================= HAMBURGER NAV ================= */
+        .hamburger-menu {
+            position: fixed;
+            top: 35px;
+            right: 5%;
+            width: 32px;
+            height: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .hamburger-bar {
+            width: 100%;
+            height: 3px;
+            background-color: #00e5ff;
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.open .bar-1 { transform: translateY(9px) rotate(45deg); }
+        .hamburger-menu.open .bar-2 { opacity: 0; }
+        .hamburger-menu.open .bar-3 { transform: translateY(-10px) rotate(-45deg); }
+
+        .micro-dropdown-menu {
+            position: fixed;
+            top: 75px;
+            right: 5%;
+            width: 220px;
+            background: rgba(12, 8, 28, 0.95);
+            border: 1px solid rgba(161, 0, 255, 0.5);
+            border-radius: 10px;
+            padding: 12px;
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            opacity: 0;
+            transform: translateY(-15px);
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+
+        .micro-dropdown-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .menu-link {
+            color: #a5a5c0;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .menu-link:hover {
+            color: #00e5ff;
+            background: rgba(161, 0, 255, 0.15);
+        }
+
+        /* ================= TRELLO INTERFACE ARCHITECTURE ================= */
+        #main-canvas {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .landing-screen {
+            z-index: 5;
+            display: flex;
+        }
+
+        .voyage-btn {
+            background: rgba(5, 5, 18, 0.8);
+            color: #d800ff;
+            border: 1px solid rgba(216, 0, 255, 0.5);
+            padding: 20px 40px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(216, 0, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .voyage-btn:hover {
+            color: #ffffff;
+            border-color: #00e5ff;
+            box-shadow: 0 0 35px rgba(0, 229, 255, 0.4);
+        }
+
+        .portfolio-content {
+            position: absolute;
+            width: 90%;
+            max-width: 1240px;
+            height: 75vh;
+            display: grid;
+            grid-template-columns: 1.15fr 1fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 15px 35px;
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .nav-label {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #ffffff;
+            text-transform: uppercase;
+            padding-left: 4px;
+        }
+
+        .canva-column {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .glass-box {
+            background: rgba(7, 5, 20, 0.65);
+            border: 2px solid #a100ff;
+            border-radius: 18px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            height: 100%;
+        }
+
+        .profile-container {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 18px;
+            position: relative;
+        }
+
+        .profile-container::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 12px;
+            height: 12px;
+            border-top: 2px solid #00e5ff;
+            border-left: 2px solid #00e5ff;
+        }
+
+        .rotated-name-wrapper {
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-name {
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: #ff7bf5;
+        }
+
+        .profile-main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .portrait-frame {
+            width: 100%;
+            height: 58%;
+            border: 2px solid #a100ff;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: transparent; /* RESTORED: Transparent background wrapper */
+        }
+
+        .portrait-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: transparent;
+        }
+
+        .carousel-viewframe {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .carousel-slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .carousel-card {
+            height: calc(50% - 8px);
+            min-height: calc(50% - 8px);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .carousel-card.active-border {
+            border-color: #00e5ff !important;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+        }
+
+        .carousel-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            height: 40px;
+        }
+
+        .carousel-nav-btn {
+            flex: 1;
+            background: rgba(12, 8, 28, 0.7);
+            border: 2px solid #a100ff;
+            color: #ffffff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 800;
+            letter-spacing: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .carousel-nav-btn:hover {
+            background: #a100ff;
+        }
+
+        .contact-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 15px;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+        }
+
+        .contact-value {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            margin-top: 2px;
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #00e5ff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h3 { font-size: 1.2rem; margin-bottom: 4px; font-weight: 800; }
+        p { color: #a5a5c0; font-size: 0.85rem; line-height: 1.5; }
+
+        /* ================= STATES TRIGGER ================= */
+        .canvas-active .landing-screen {
+            display: none !important;
+        }
+
+        .canvas-active .portfolio-content {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;
+        }
+
+        .canvas-active .hamburger-menu, .canvas-active .space-prop {
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Infinite Z-Recycling Space Canvas Layer -->
+    <canvas id="space-canvas"></canvas>
+    
+    <!-- Design Vectors -->
+    <div class="space-prop prop-canva-star-1">
+        <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+            <path d="M50,0 Q50,45 5,50 Q45,50 50,95 Q50,55 95,50 Q55,50 50,0 Z" fill="none" stroke="#ff7bf5" stroke-width="2"/>
+        </svg>
+    </div>
+
+    <div class="space-prop prop-canva-star-2">
+        <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+            <path d="M50,0 Q50,45 5,50 Q45,50 50,95 Q50,55 95,50 Q55,50 50,0 Z" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+        </svg>
+    </div>
+
+    <div class="space-prop prop-ring-planet">
+        <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+            <ellipse cx="50" cy="55" rx="45" ry="12" fill="none" stroke="rgba(161, 0, 255, 0.4)" stroke-width="3" transform="rotate(-12 50 55)"/>
+            <circle cx="50" cy="55" r="24" fill="#03020d" stroke="#a100ff" stroke-width="2"/>
+            <ellipse cx="50" cy="55" rx="45" ry="12" fill="none" stroke="#00e5ff" stroke-width="2" transform="rotate(-12 50 55)" stroke-dasharray="45 55"/>
+        </svg>
+    </div>
+
+    <!-- Navigation Components -->
+    <div class="hamburger-menu" id="navHamburger" onclick="toggleDropdownMenu()">
+        <div class="hamburger-bar bar-1"></div>
+        <div class="hamburger-bar bar-2" style="width: 75%; align-self: flex-end;"></div>
+        <div class="hamburger-bar bar-3"></div>
+    </div>
+
+    <nav class="micro-dropdown-menu" id="navigationDropdown">
+        <a href="#" class="menu-link" onclick="goToSection(0)">Projects Map</a>
+        <a href="#" class="menu-link" onclick="goToSection(1)">Qualifications</a>
+        <a href="#" class="menu-link" onclick="goToSection(2)">Distinctions</a>
+        <a href="#" class="menu-link" onclick="goToSection(3)">Evaluations</a>
+    </nav>
+
+    <div id="main-canvas">
+        <div class="landing-screen" id="landingView">
+            <button class="voyage-btn" onclick="initiateVoyage()">INITIATE VOYAGE</button>
+        </div>
+
+        <div class="portfolio-content" id="portfolioView">
+            <div class="nav-label">Profile</div>
+            <div class="nav-label">Cards</div>
+            <div class="nav-label">Contact</div>
+            
+            <!-- Column 1 -->
+            <div class="canva-column">
+                <div class="glass-box profile-container">
+                    <div class="rotated-name-wrapper">
+                        <div class="profile-name">TEGAMENO IYAMBO</div>
+                    </div>
+                    <div class="profile-main-content">
+                        <div class="portrait-frame">
+                            <!-- UPDATED: Pointing to exact asset source target -->
+                            <img src="../Image-Assets/portrait.png" alt="Portrait" class="portrait-img">
+                        </div>
+                        <div class="profile-bio-text">
+                            <div class="card-tag">SYSTEM PARAMETERS //</div>
+                            <p style="margin-top: 4px;">Building high-end framework architectures, modular processing structures, and custom graphical user interfaces.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2 -->
+            <div class="canva-column">
+                <div class="carousel-viewframe">
+                    <div class="carousel-slider-container" id="carouselSlider">
+                        <div class="glass-box carousel-card active-border">
+                            <div class="card-tag">DEVELOPMENT MAP // 01</div>
+                            <h3>Projects Engine</h3>
+                            <p>Developing core deployment components, multi-page layout routes, and embedded state machines using Flet compilation blocks.</p>
+                        </div>
+                        <div class="glass-box carousel-card">
+                            <div class="card-tag">VALIDATIONS // 02</div>
+                            <h3>Qualifications</h3>
+                            <p>Fulfilling engineering validation sequences and documenting computation data metrics within system text records.</p>
+                        </div>
+                        <div class="glass-box carousel-card">
+                            <div class="card-tag">DISTINCTIONS // 03</div>
+                            <h3>Awards & Honors</h3>
+                            <p>Recognitions achieved for performance milestones within design pipelines and rapid algorithmic platform execution cycles.</p>
+                        </div>
+                        <div class="glass-box carousel-card">
+                            <div class="card-tag">EVALUATIONS // 04</div>
+                            <h3>Testimonies</h3>
+                            <p>Endorsements and feedback compilation metrics generated by external project partners during integration sprints.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-controls">
+                    <button class="carousel-nav-btn" onclick="slideCarousel(-1)">PREV</button>
+                    <button class="carousel-nav-btn" onclick="slideCarousel(1)">NEXT</button>
+                </div>
+            </div>
+
+            <!-- Column 3 -->
+            <div class="canva-column">
+                <div class="glass-box" style="display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div class="card-tag">COMMUNICATION ROUTING</div>
+                        <h3 style="margin-top:4px;">Get In Touch</h3>
+                        <p>Direct contact endpoints for engineering operations data tracking requests.</p>
+                    </div>
+                    
+                    <ul class="contact-list">
+                        <li class="contact-item">
+                            <span class="card-tag">EMAIL ARCHIVE //</span>
+                            <a href="mailto:example@domain.com" class="contact-value">example@domain.com</a>
+                        </li>
+                        <li class="contact-item">
+                            <span class="card-tag">LINKEDIN NETWORK //</span>
+                            <a href="https://linkedin.com" target="_blank" class="contact-value">linkedin.com/in/tegameno</a>
+                        </li>
+                        <li class="contact-item">
+                            <span class="card-tag">GITHUB ARCHIVE //</span>
+                            <a href="https://github.com" target="_blank" class="contact-value">github.com/tegameno</a>
+                        </li>
+                        <li class="contact-item">
+                            <span class="card-tag">MOBILE LINE //</span>
+                            <span class="contact-value">+264 (81) 000-0000</span>
+                        </li>
+                    </ul>
+
+                    <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+                        <span class="card-tag">DIRECTORY STATUS:</span>
+                        <p style="color: #ffffff; font-weight: 600; margin-top:2px;">Secure Terminal Active</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- 3D Z-DEPTH RECYCLING STARFIELD RENDERER ---
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let numStars = 250; 
+        let stars = [];
+        let warpActive = false;
+        
+        const maxDepth = 1000;
+        const passiveSpeed = 1.2;
+        const warpSpeedLimit = 40;
+        let speed = passiveSpeed;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: (Math.random() - 0.5) * canvas.width * 2,
+                    y: (Math.random() - 0.5) * canvas.height * 2,
+                    z: Math.random() * maxDepth
+                });
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let cx = canvas.width / 2;
+            let cy = canvas.height / 2;
+
+            if (warpActive) {
+                if (speed < warpSpeedLimit) speed += 3.0;
+            } else {
+                if (speed > passiveSpeed) speed -= 2.0;
+                if (speed < passiveSpeed) speed = passiveSpeed;
+            }
+
+            for (let i = 0; i < numStars; i++) {
+                let s = stars[i];
+                
+                let kOffsetOld = 300 / s.z;
+                let pxOld = s.x * kOffsetOld + cx;
+                let pyOld = s.y * kOffsetOld + cy;
+
+                s.z -= speed;
+
+                if (s.z <= 0) {
+                    s.z = maxDepth;
+                    s.x = (Math.random() - 0.5) * canvas.width * 2;
+                    s.y = (Math.random() - 0.5) * canvas.height * 2;
+                    
+                    kOffsetOld = 300 / s.z;
+                    pxOld = s.x * kOffsetOld + cx;
+                    pyOld = s.y * kOffsetOld + cy;
+                }
+
+                let kOffsetNew = 300 / s.z;
+                let pxNew = s.x * kOffsetNew + cx;
+                let pyNew = s.y * kOffsetNew + cy;
+
+                let starRadius = (1 - s.z / maxDepth) * 2.2;
+                if (starRadius < 0.6) starRadius = 0.6;
+
+                if (warpActive && speed > 10) {
+                    ctx.strokeStyle = "rgba(255, 255, 255, " + (1 - s.z / maxDepth) + ")";
+                    ctx.lineWidth = starRadius;
+                    ctx.beginPath();
+                    ctx.moveTo(pxOld, pyOld);
+                    ctx.lineTo(pxNew, pyNew);
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+                    ctx.beginPath();
+                    ctx.arc(pxNew, pyNew, starRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // --- CORE NAVIGATION INTERFACE CONTROLLERS ---
+        function initiateVoyage() {
+            warpActive = true;
+            document.body.classList.add('canvas-active');
+            setTimeout(() => { warpActive = false; }, 1200);
+        }
+
+        const dropdownMenu = document.getElementById('navigationDropdown');
+        const hamburgerBtn = document.getElementById('navHamburger');
+
+        function toggleDropdownMenu() {
+            dropdownMenu.classList.toggle('active');
+            hamburgerBtn.classList.toggle('open');
+        }
+
+        function goToSection(index) {
+            toggleDropdownMenu();
+            currentCarouselIndex = index;
+            if(currentCarouselIndex > 2) currentCarouselIndex = 2; 
+            const stepShift = currentCarouselIndex * -52;
+            sliderContainer.style.transform = `translateY(${stepShift}%)`;
+        }
+
+        let currentCarouselIndex = 0;
+        const sliderContainer = document.getElementById('carouselSlider');
+
+        function slideCarousel(direction) {
+            currentCarouselIndex += direction;
+            if (currentCarouselIndex < 0) currentCarouselIndex = 2;
+            else if (currentCarouselIndex > 2) currentCarouselIndex = 0;
+            
+            const stepShift = currentCarouselIndex * -52;
+            sliderContainer.style.transform = `translateY(${stepShift}%)`;
+        }
+    </script>
+</body>
+</html>

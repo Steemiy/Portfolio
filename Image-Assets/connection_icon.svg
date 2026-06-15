@@ -1,0 +1,18 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#330066"/>
+      <stop offset="100%" stop-color="#3366CC"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .node { fill: #1A1A1A; stroke: #333; }
+    .stream { stroke: url(#gradient1); stroke-width: 2; }
+    .percent { fill: #66CCFF; font-family: sans-serif; font-size: 10px; }
+  </style>
+  <path class="node" d="M 100,50 L 150,25 L 200,50 L 150,75 Z"/>
+  <path class="node" d="M 50,150 L 100,125 L 150,150 L 100,175 Z"/>
+  <path class="stream" d="M 150,75 C 150,100 100,100 100,125"/>
+  <circle cx="100" cy="125" r="3" fill="#66CCFF"/>
+  <text x="100" y="128" class="percent" text-anchor="middle">75%</text>
+</svg>

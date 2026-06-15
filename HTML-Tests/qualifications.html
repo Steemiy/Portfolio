@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Qualifications // Tegameno Iyambo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #03020d; color: #ffffff; overflow: hidden; height: 100vh; }
+        #space-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        
+        /* Schematic Nodes (The new "Props") */
+        .node-l { position: absolute; top: 20%; left: 5%; width: 100px; height: 100px; z-index: 0; opacity: 0.3; pointer-events: none; }
+        .node-r { position: absolute; bottom: 20%; right: 5%; width: 100px; height: 100px; z-index: 0; opacity: 0.3; pointer-events: none; }
+
+        .container {
+            position: relative; z-index: 2; width: 90%; max-width: 650px; margin: 5% auto;
+            background: rgba(7, 5, 20, 0.9); border: 1px solid #a100ff; padding: 30px;
+            height: 80vh; display: flex; flex-direction: column; overflow: hidden;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)),
+                        rgba(7, 5, 20, 0.9);
+            background-size: 100% 4px, 3px 100%, cover;
+        }
+
+        .container::before { content: ""; position: absolute; top: -5px; left: -5px; width: 20px; height: 20px; border-top: 2px solid #a100ff; border-left: 2px solid #a100ff; }
+        .container::after { content: ""; position: absolute; bottom: -5px; right: -5px; width: 20px; height: 20px; border-bottom: 2px solid #a100ff; border-right: 2px solid #a100ff; }
+
+        .scanner { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: rgba(161, 0, 255, 0.3); z-index: 4; animation: move-scan 4s linear infinite; pointer-events: none; }
+        @keyframes move-scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .header-section { position: sticky; top: 0; padding-bottom: 20px; z-index: 3; background: rgba(7, 5, 20, 0.8); }
+        .card-tag { font-size: 0.7rem; font-weight: 700; color: #00e5ff; letter-spacing: 2px; margin-bottom: 10px; }
+        .filter-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .filter-btn { background: #1a1a2e; border: 1px solid #a100ff; color: white; padding: 5px 12px; cursor: pointer; font-size: 0.7rem; }
+        .filter-btn:hover { background: #a100ff; }
+
+        #cert-grid { flex-grow: 1; overflow-y: auto; }
+        #cert-grid::-webkit-scrollbar { width: 4px; }
+        #cert-grid::-webkit-scrollbar-track { background: #03020d; }
+        #cert-grid::-webkit-scrollbar-thumb { background: #a100ff; }
+
+        @keyframes scan { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .cert-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: white; cursor: pointer; animation: scan 0.5s ease forwards; opacity: 0; }
+        .cert-item:hover { padding-left: 20px; border-left: 2px solid #00e5ff; background: rgba(161, 0, 255, 0.05); }
+        .cert-item img { width: 18px; margin-right: 15px; }
+
+        #pdf-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; }
+        #pdf-frame { width: 85%; height: 85%; border: 1px solid #a100ff; background: white; }
+    </style>
+</head>
+<body>
+
+    <canvas id="space-canvas"></canvas>
+
+    <svg class="node-l" viewBox="0 0 100 100"><circle cx="50" cy="50" r="10" stroke="#a100ff" fill="none" stroke-width="2"/><line x1="50" y1="0" x2="50" y2="100" stroke="#a100ff" stroke-width="1"/><line x1="0" y1="50" x2="100" y2="50" stroke="#a100ff" stroke-width="1"/></svg>
+    <svg class="node-r" viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="40" stroke="#00e5ff" fill="none" stroke-width="2"/><circle cx="50" cy="50" r="5" fill="#00e5ff"/></svg>
+
+    <div id="pdf-modal">
+        <span style="position:absolute; top:20px; right:20px; color:#a100ff; cursor:pointer;" onclick="document.getElementById('pdf-modal').style.display='none'">[CLOSE]</span>
+        <iframe id="pdf-frame" src=""></iframe>
+    </div>
+
+    <div class="container">
+        <div class="scanner"></div>
+        <div class="header-section">
+            <div class="card-tag">STATUS: ONLINE // SYSTEM: V.2.0</div>
+            <h2>CERTIFICATIONS</h2>
+            <div class="filter-controls">
+                <button class="filter-btn" onclick="filterCerts('all')">ALL</button>
+                <button class="filter-btn" onclick="filterCerts('matlab')">MATLAB</button>
+                <button class="filter-btn" onclick="filterCerts('cad')">CAD</button>
+            </div>
+        </div>
+
+        <div id="cert-grid"></div>
+
+        <a href="main-page.html" style="margin-top:20px; color:#a100ff; text-decoration:none; font-size: 0.8rem;">[RETURN TO MATRIX]</a>
+    </div>
+
+    <script>
+        const certData = [
+            { name: "Calculations w/ Vectors & Matrices", cat: "matlab", url: "../Certificates/Math Works/MathWorks Calculations with Vectors and Matrices.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "Circuit Simulation Onramp", cat: "matlab", url: "../Certificates/Math Works/MathWorks Circuit Simulation Onramp.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "Core Matlab Skills", cat: "matlab", url: "../Certificates/Math Works/MathWorks Core Matlab Skills.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "Matlab Onramp", cat: "matlab", url: "../Certificates/Math Works/MathWorks Matlab Onramp.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "Signal Processing Onramp", cat: "matlab", url: "../Certificates/Math Works/MathWorks Signal Processing Onramp.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "Simulink Fundamentals", cat: "matlab", url: "../Certificates/Math Works/MathWorks Simulink Fundamentals.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "Simulink Onramp", cat: "matlab", url: "../Certificates/Math Works/MathWorks Simulink Onramp.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "Visualization in Matlab", cat: "matlab", url: "../Certificates/Math Works/MathWorks Visualization in Matlab.pdf", icon: "../Image-Assets/mathworksicon.png" },
+            { name: "AutoCAD Essentials", cat: "cad", url: "../Certificates/SourceCAD/SourceCAD AutoCAD Essentials.pdf", icon: "../Image-Assets/sourcecadicon.png" }
+        ];
+
+        const grid = document.getElementById('cert-grid');
+        function render(filter = 'all') {
+            grid.innerHTML = '';
+            certData.forEach((item, index) => {
+                if(filter === 'all' || item.cat === filter) {
+                    const div = document.createElement('div');
+                    div.className = `cert-item ${item.cat}`;
+                    div.style.animationDelay = `${(index + 1) * 0.05}s`;
+                    div.innerHTML = `<span><img src="${item.icon}"> ${item.name}</span> <span>[ACCESS]</span>`;
+                    div.onclick = () => { document.getElementById('pdf-frame').src = item.url; document.getElementById('pdf-modal').style.display = 'flex'; };
+                    grid.appendChild(div);
+                }
+            });
+        }
+        
+        function filterCerts(cat) { render(cat); }
+        render();
+
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const stars = Array.from({length: 100}, () => ({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.5}));
+        function animate() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill(); s.x -= 0.1; if(s.x < 0) s.x = canvas.width; });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

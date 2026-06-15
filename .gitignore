@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+.flet/
+build/
+dist/
+
+.firebase/
+firebase-debug.log
+*.local
+build-log*.txt
+
+.DS_Store
+Thumbs.db
