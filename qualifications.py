@@ -79,6 +79,7 @@ CERTIFICATES = [
         "cat": "cad",
         "url": "Certificates/SourceCAD/SourceCAD AutoCAD Essentials.pdf",
         "icon": "Image-Assets/sourcecadicon.png",
+        "image": "Certificates/SourceCAD/SourceCAD AutoCAD Essentials-1.png",
     },
 ]
 
