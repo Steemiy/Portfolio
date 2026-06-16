@@ -336,7 +336,7 @@ async def main(page: ft.Page):
                                         ft.Column(
                                             [
                                                 tag("SYSTEM PARAMETERS //"),
-                                                paragraph("Hello visitors, I am Tegameno Iyambo. Im current a 2nd Year Electronics and Computer Engineering Student at the University of Namibia and I've dabled in many fields. This website acts as a hub for others to see my works."),
+                                                paragraph("Tegameno Iyambo | Electronics & Computer Engineering Student | University of Namibia | A central archive of my projects, experiments, and multidisciplinary work."),
                                             ],
                                             spacing=5,
                                         ),
