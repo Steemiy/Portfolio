@@ -28,10 +28,10 @@ TAG_COLORS = [
 CARDS = [
     {"title": "Projects Engine", "icon": "Image-Assets/projects-icon.svg", "route": "/projects"},
     {"title": "Qualifications", "icon": "Image-Assets/qualifications-icon.svg", "route": "/qualifications"},
-    {"title": "Awards & Honors", "icon": "Image-Assets/awards-icon.svg", "route": None},
-    {"title": "Testimonies", "icon": "Image-Assets/testimonies-icon.svg", "route": None},
+    {"title": "Awards & Honors(WIP)", "icon": "Image-Assets/awards-icon.svg", "route": None},
+    {"title": "Testimonies(WIP)", "icon": "Image-Assets/testimonies-icon.svg", "route": None},
     {"title": "Technical Blogs", "icon": "Image-Assets/blog_icon_white.svg", "route": "/blog"},
-    {"title": "Handles", "icon": "Image-Assets/handles_icon_white.svg", "route": None},
+    {"title": "Handles(WIP)", "icon": "Image-Assets/handles_icon_white.svg", "route": None},
 ]
 
 CONTACTS = [
@@ -336,7 +336,7 @@ async def main(page: ft.Page):
                                         ft.Column(
                                             [
                                                 tag("SYSTEM PARAMETERS //"),
-                                                paragraph("Building high-end framework architectures, modular processing structures, and custom graphical user interfaces."),
+                                                paragraph("Hello visitors, I am Tegameno Iyambo. Im current a 2nd Year Electronics and Computer Engineering Student at the University of Namibia and I've dabled in many fields. This website acts as a hub for others to see my works."),
                                             ],
                                             spacing=5,
                                         ),
@@ -480,9 +480,9 @@ async def main(page: ft.Page):
                 ft.TextButton(content=text("Projects", color=MUTED, size=13), on_click=lambda e: page.go("/projects")),
                 ft.TextButton(content=text("Qualifications", color=MUTED, size=13), on_click=lambda e: page.go("/qualifications")),
                 ft.TextButton(content=text("Technical Blogs", color=MUTED, size=13), on_click=lambda e: page.go("/blog")),
-                ft.TextButton(content=text("Awards", color=MUTED, size=13), on_click=lambda e: go_to_section(2)),
-                ft.TextButton(content=text("Testimonies", color=MUTED, size=13), on_click=lambda e: go_to_section(3)),
-                ft.TextButton(content=text("Handles", color=MUTED, size=13), on_click=lambda e: go_to_section(5)),
+                ft.TextButton(content=text("Awards(WIP)", color=MUTED, size=13), on_click=lambda e: go_to_section(2)),
+                ft.TextButton(content=text("Testimonies(WIP)", color=MUTED, size=13), on_click=lambda e: go_to_section(3)),
+                ft.TextButton(content=text("Handles(WIP)", color=MUTED, size=13), on_click=lambda e: go_to_section(5)),
             ],
             spacing=4,
         ),

@@ -9,16 +9,25 @@ except ImportError:
     ftv = None
 
 
-BG = "#060814"
-PANEL = "#0f0c1e"
-HEADER = "#060814"
-PURPLE = "#8b5cf6"
-LAVENDER = "#a78bfa"
-BLUE = "#60a5fa"
-PINK = "#f472b6"
+# Projects uses a soft yellow background to visually differentiate from other pages
+BG = "#2c2d0e"        # deep warm yellow/brown
+PANEL = "#261b0a"    # slightly lighter panel surface
+HEADER = "#1a1506"
+
+# Yellow-first palette to make Projects page stand out from other pages
+YELLOW = "#fbbf24"          # bright amber
+GOLD = "#f59e0b"            # deeper amber
+SUNSET = "#f97316"          # warm orange accent
+LIME = "#eab308"            # extra punch
+
+PURPLE = "#d946ef"          # retained for subtle contrast (menu accents)
+LAVENDER = "#facc15"        # used as the main highlight color
+BLUE = "#7dd3fc"            # for secondary borders
+PINK = "#fb7185"            # for code snippets/buttons
 WHITE = "#ffffff"
-TEXT = "#e2e8f0"
-MUTED = "#cbd5e1"
+TEXT = "#fef3c7"            # slightly warm white
+MUTED = "#fde68a"           # warm muted text
+
 HOME_URL = "HTML-Tests/main-page.html"
 QUALIFICATIONS_URL = "HTML-Tests/qualifications.html"
 
@@ -81,8 +90,9 @@ def text(value, color=TEXT, size=14, weight=None, **kwargs):
     return ft.Text(**args)
 
 
-def paragraph(value, color=MUTED):
-    return text(value, color=color, size=14)
+def paragraph(value, color=MUTED, size=13):
+    return text(value, color=color, size=size)
+
 
 
 def code(value):
@@ -108,9 +118,10 @@ def bullet(value):
 def section_heading(value):
     return ft.Container(
         padding=padding(left=12),
-        border=border_only(left=border_side(3, PURPLE)),
+        border=border_only(left=border_side(3, LIME)),
         content=text(value, color=WHITE, size=18, weight=ft.FontWeight.W_600),
     )
+
 
 
 def subheading(value):
@@ -247,7 +258,7 @@ def build_mineshield_content():
                 "As the UI/UX Lead for MineShield, I was responsible for the end-to-end visual and interactive architecture of the application, translating complex safety requirements into production-ready React Native components."
             ),
             bullet("Key deliverables: Figma Design System, Cross-Platform Component Library, Global Theme Engine, and Technical System Documentation."),
-            video_embed("Videos/MineShield Contributions.mp4", "MineShield Contributions"),
+            video_embed("Videos/MineShield_Contributions.mp4", "MineShield Contributions"),
             section_heading("2. Figma Design System & Iteration"),
             subheading("2.1 Environmental Design Factors"),
             bullet("Expanded critical touch targets to a minimum of 64 x 64 dp for workers wearing protective gear."),
@@ -306,8 +317,8 @@ def build_mineshield_content():
 def build_bitlink_content():
     return ft.Column(
         [
-            section_heading("Project Profile coming soon..."),
-            paragraph("Integration parameters and summary assets for the Bitlink architecture pipeline are currently being configured."),
+            section_heading("Documentation coming soon."),
+            paragraph("Bitlink is a scheduling webapp designed for the academic scene. It is currently under development and will be released in the near future."),
         ],
         spacing=14,
     )
@@ -359,8 +370,10 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
         icon = "+" if not expanded else "×"
         return ft.Container(
             bgcolor=alpha(PANEL, 0.75),
-            border=border_all(1, alpha(LAVENDER if expanded else WHITE, 0.32 if expanded else 0.08)),
+            border=border_all(1, alpha(LIME if expanded else WHITE, 0.32 if expanded else 0.08)),
+
             border_radius=16,
+
             clip_behavior=ft.ClipBehavior.HARD_EDGE,
             shadow=ft.BoxShadow(blur_radius=35, color=alpha("#000000", 0.55), offset=ft.Offset(0, 16)),
             content=ft.Column(
@@ -406,14 +419,14 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
         sections_column.controls = [
             project_section(
                 "section-mineshield",
-                "MineShield: UI/UX & Component Engineering",
+                "MineShield",
                 "Semester Project • UI/UX Lead & Frontend Developer",
                 build_mineshield_content(),
             ),
             project_section(
                 "section-bitlink",
-                "Bitlink: Core Networking Architecture",
-                "Project Framework • Pending Configuration",
+                "Bitlink (W.I.P.)",
+                "Semester Project • Lead Frontend and Backend Developer",
                 build_bitlink_content(),
             ),
         ]
@@ -483,7 +496,7 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
         gradient=ft.RadialGradient(
             center=ft.Alignment(0.08, -0.18),
             radius=1.25,
-            colors=["#1a103c", "#0b112c", BG],
+            colors=["#16103c", "#0b152c", BG],
         ),
         content=ft.Stack(
             [
