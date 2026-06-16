@@ -210,14 +210,26 @@ def title_block(label):
 def video_embed(src, title, *, height=190):
     if ftv:
         return ft.Container(
-            height=height,
+            height=height + 80,
+            padding=padding(left=16, top=16, right=16, bottom=16),
             border=border_all(1, alpha(CYAN, 0.55)),
             border_radius=10,
             clip_behavior=ft.ClipBehavior.HARD_EDGE,
             bgcolor=alpha("#000000", 0.35),
-            content=ftv.Video(
-                playlist=[ftv.VideoMedia(src)],
-                expand=True,
+            content=ft.Column(
+                [
+                    text(title, color=WHITE, size=14, weight=ft.FontWeight.W_700),
+                    paragraph(f"Source: {src}", color=MUTED, size=12),
+                    ft.Container(
+                        height=height,
+                        clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                        content=ftv.Video(
+                            playlist=[ftv.VideoMedia(src)],
+                            expand=True,
+                        ),
+                    ),
+                ],
+                spacing=10,
             ),
         )
 

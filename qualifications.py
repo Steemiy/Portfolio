@@ -23,48 +23,56 @@ CERTIFICATES = [
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Calculations with Vectors and Matrices.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Calculations with Vectors and Matrices-1.png",
     },
     {
         "name": "Circuit Simulation Onramp",
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Circuit Simulation Onramp.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Circuit Simulation Onramp-1.png",
     },
     {
         "name": "Core Matlab Skills",
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Core Matlab Skills.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Core Matlab Skills-1.png",
     },
     {
         "name": "Matlab Onramp",
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Matlab Onramp.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Matlab Onramp-1.png",
     },
     {
         "name": "Signal Processing Onramp",
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Signal Processing Onramp.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Signal Processing Onramp-1.png",
     },
     {
         "name": "Simulink Fundamentals",
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Simulink Fundamentals.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Simulink Fundamentals-1.png",
     },
     {
         "name": "Simulink Onramp",
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Simulink Onramp.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Simulink Onramp-1.png",
     },
     {
         "name": "Visualization in Matlab",
         "cat": "matlab",
         "url": "Certificates/Math Works/MathWorks Visualization in Matlab.pdf",
         "icon": "Image-Assets/mathworksicon.png",
+        "image": "Certificates/Math Works/MathWorks Visualization in Matlab-1.png",
     },
     {
         "name": "AutoCAD Essentials",
@@ -323,35 +331,53 @@ def build_qualifications_page(page: ft.Page, home_handler=None, projects_handler
         return ft.TextButton(content=label, url=HOME_URL)
 
     def make_modal(cert):
+        cert_image = None
+        if "image" in cert:
+            cert_image = ft.Container(
+                height=520,
+                clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                content=ft.Image(src=cert["image"], fit="contain"),
+            )
+
+        modal_content = [
+            ft.Row(
+                [
+                    tag("CERTIFICATE ACCESS"),
+                    ft.TextButton(content="[CLOSE]", on_click=close_modal, style=ft.ButtonStyle(color=PURPLE)),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            ),
+            nav_label(cert["name"]),
+        ]
+
+        if cert_image:
+            modal_content.append(cert_image)
+        else:
+            modal_content.append(paragraph("The selected certificate is available as a local PDF asset in the portfolio directory."))
+
+        modal_content.extend([
+            ft.Row(
+                [
+                    ft.ElevatedButton(content="OPEN PDF", url=cert["url"]),
+                    ft.OutlinedButton(content="RETURN", on_click=close_modal),
+                ],
+                spacing=12,
+            ),
+        ])
+
         return ft.Container(
             expand=True,
             bgcolor=alpha("#000000", 0.9),
             alignment=alignment_center(),
             content=ft.Container(
-                width=620,
+                width=680,
                 padding=30,
                 bgcolor=alpha(PANEL, 0.96),
                 border=border_all(1, PURPLE),
                 content=ft.Column(
-                    [
-                        ft.Row(
-                            [
-                                tag("CERTIFICATE ACCESS"),
-                                ft.TextButton(content="[CLOSE]", on_click=close_modal, style=ft.ButtonStyle(color=PURPLE)),
-                            ],
-                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                        ),
-                        nav_label(cert["name"]),
-                        paragraph("The selected certificate is available as a local PDF asset in the portfolio directory."),
-                        ft.Row(
-                            [
-                                ft.ElevatedButton(content="OPEN PDF", url=cert["url"]),
-                                ft.OutlinedButton(content="RETURN", on_click=close_modal),
-                            ],
-                            spacing=12,
-                        ),
-                    ],
+                    modal_content,
                     spacing=18,
+                    scroll=ft.ScrollMode.AUTO,
                 ),
             ),
         )

@@ -14,7 +14,7 @@ PURPLE = "#a100ff"
 CYAN = "#4c4cfe"
 PINK = "#ff7bf5"
 MUTED = "#a5a5c0"
-WHITE = "#ffffff"
+WHITE = "#aca9ff"
 
 # Color Palette Mapping for Skills (Matching the Tag Screenshot Aesthetic)
 TAG_COLORS = [
@@ -90,7 +90,7 @@ def glass_box(content, border_color=PURPLE, pad=24, expand=False, height=None):
         content=content,
         bgcolor=alpha(PANEL, 0.65),
         border=border_all(2, border_color),
-        border_radius=18,
+        border_radius=6,
         padding=pad,
         expand=expand,
         height=height,
@@ -137,7 +137,7 @@ def starfield(width=1920, height=900):
     random.seed(42)
     controls = []
     stars = []
-    for _ in range(250):
+    for _ in range(75):
         size = random.choice([1, 1, 1, 2, 2, 3])
         trail = ft.Container(
             left=0, top=0, width=1, height=1,
@@ -154,7 +154,9 @@ def starfield(width=1920, height=900):
             "x": (random.random() - 0.5) * width,
             "y": (random.random() - 0.5) * height,
             "z": random.random() * 900 + 100,
-            "control": star, "trail": trail,
+            "control": star,
+            "trail": trail,
+            "trail_count": 0,
         })
         controls.extend([trail, star])
     return controls, stars
@@ -328,6 +330,7 @@ async def main(page: ft.Page):
                                             border=border_all(2, PURPLE),
                                             border_radius=12,
                                             clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                                            bgcolor=alpha("#5D3FD3", 0.07),
                                             content=ft.Image(src="Image-Assets/mtmgt.png", fit="cover"),
                                         ),
                                         ft.Column(
@@ -375,10 +378,14 @@ async def main(page: ft.Page):
             nav_label("Cards"),
             ft.Container(content=cards_column, height=360),
             tag("CORE_COMPETENCIES //"),
-            glass_box(
-                content=ft.Column([build_skill_chips()], scroll=ft.ScrollMode.AUTO),
-                border_color=alpha(CYAN, 0.5),
-                pad=16,
+            ft.Container(
+                content=glass_box(
+                    content=ft.Column([build_skill_chips()], scroll=ft.ScrollMode.AUTO),
+                    border_color=alpha(CYAN, 0.5),
+                    pad=16,
+                    expand=True,
+                ),
+                alignment=alignment_center(),
                 expand=True,
             )
         ],
@@ -506,7 +513,7 @@ async def main(page: ft.Page):
     landing_wrapper = ft.Container(content=landing_layer, expand=True, alignment=alignment_center())
 
     root = ft.Container(
-        expand=True, bgcolor=BG, animate_opacity=260, animate_scale=260,
+        expand=True, bgcolor=alpha("#5D3FD3", 0.3), animate_opacity=260, animate_scale=260,
         gradient=ft.RadialGradient(center=ft.Alignment(0, 0), radius=1.15, colors=["#0d092b", BG]),
         content=ft.Stack(
             [
@@ -579,8 +586,10 @@ async def main(page: ft.Page):
     page.add(root)
 
     tick = 0.0
+    frame_count = 0
     while True:
         tick += 0.06
+        frame_count += 1
         if routed_view["animate"]:
             routed_view["animate"](tick)
             page.update()
@@ -626,8 +635,13 @@ async def main(page: ft.Page):
                 trail.width, trail.height = length, max(1, radius * 0.7)
                 trail.rotate = ft.Rotate(math.atan2(dy, dx))
                 trail.opacity = max(0.15, opacity * 0.75)
+                star["trail_count"] = 8
             else:
-                trail.visible = False
+                if star["trail_count"] > 0:
+                    trail.opacity = max(0, trail.opacity - 0.1)
+                    star["trail_count"] -= 1
+                else:
+                    trail.visible = False
 
         for prop in floating_props:
             control = prop["control"]
