@@ -543,8 +543,14 @@ async def main(page: ft.Page):
             await reveal()
 
     async def handle_route(_):
+        # Reset global background on each navigation to prevent gradient color lingering.
+        page.bgcolor = BG
+        root.bgcolor = alpha("#5D3FD3", 0.3)
+        page.update()
+
         if not page.controls:
             return
+
         current = page.controls[0]
         current.animate_opacity, current.animate_scale = 220, 220
         current.opacity, current.scale = 0, 0.985
