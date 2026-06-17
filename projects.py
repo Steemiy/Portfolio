@@ -497,9 +497,19 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
             content=ft.Image(src=src, width=size, height=size, fit="contain"),
         )
 
-    prop_a = enter_container(content=floating_icon("Image-Assets/circuit_icon.svg", 54, 0.78), visible=False)
-    prop_b = enter_container(content=floating_icon("Image-Assets/connection_icon.svg", 44, 0.62), visible=False)
-    prop_c = enter_container(content=floating_icon("Image-Assets/cube_icon.svg", 64, 0.52), visible=False)
+    def enter_container_local(content=None, **kwargs):
+        if content is not None:
+            kwargs.setdefault("content", content)
+        kwargs.setdefault("opacity", 0)
+        kwargs.setdefault("scale", 0.82)
+        kwargs.setdefault("animate_opacity", 650)
+        kwargs.setdefault("animate_scale", 650)
+        return ft.Container(**kwargs)
+
+    prop_a = enter_container_local(content=floating_icon("Image-Assets/circuit_icon.svg", 54, 0.78), visible=False)
+    prop_b = enter_container_local(content=floating_icon("Image-Assets/connection_icon.svg", 44, 0.62), visible=False)
+    prop_c = enter_container_local(content=floating_icon("Image-Assets/cube_icon.svg", 64, 0.52), visible=False)
+
 
     floating_props = [
         {"control": prop_a, "x": 0.78, "y": 0.22, "amp_x": 16, "amp_y": 14, "phase": 0.3, "speed": 0.62, "w": 54},
