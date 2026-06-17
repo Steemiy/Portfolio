@@ -5,6 +5,7 @@ import random
 import flet as ft
 
 
+
 BG = "#130309"
 PANEL = "#160711"
 PURPLE = "#d5336f"
@@ -475,6 +476,25 @@ def build_qualifications_page(page: ft.Page, home_handler=None, projects_handler
         ),
     )
 
+    # Floating props (decorative animated icons) - parity with main-page.py
+    def floating_icon(src, size=52, opacity=0.72):
+        return ft.Container(
+            width=size,
+            height=size,
+            opacity=opacity,
+            content=ft.Image(src=src, width=size, height=size, fit="contain"),
+        )
+
+    prop_a = enter_container(content=floating_icon("Image-Assets/circuit_icon.svg", 54, 0.78), visible=False)
+    prop_b = enter_container(content=floating_icon("Image-Assets/connection_icon.svg", 44, 0.62), visible=False)
+    prop_c = enter_container(content=floating_icon("Image-Assets/cube_icon.svg", 64, 0.52), visible=False)
+
+    floating_props = [
+        {"control": prop_a, "x": 0.78, "y": 0.22, "amp_x": 16, "amp_y": 14, "phase": 0.3, "speed": 0.62, "w": 54},
+        {"control": prop_b, "x": 0.12, "y": 0.72, "amp_x": 12, "amp_y": 18, "phase": 1.9, "speed": 0.48, "w": 44},
+        {"control": prop_c, "x": 0.90, "y": 0.68, "amp_x": 20, "amp_y": 12, "phase": 3.1, "speed": 0.44, "w": 64},
+    ]
+
     root = ft.Container(
         expand=True,
         bgcolor=BG,
@@ -488,6 +508,9 @@ def build_qualifications_page(page: ft.Page, home_handler=None, projects_handler
         content=ft.Stack(
             [
                 *star_controls,
+                prop_a,
+                prop_b,
+                prop_c,
                 ft.Container(
                     left=-120,
                     top=80,
@@ -533,7 +556,21 @@ def build_qualifications_page(page: ft.Page, home_handler=None, projects_handler
         node_left.scale = 1
         node_right.opacity = 0.3
         node_right.scale = 1
+
+        for prop in floating_props:
+            prop["control"].visible = True
+            prop["control"].opacity = 0
+            prop["control"].scale = 0.82
+
         page.update()
+        await asyncio.sleep(0.06)
+
+        for prop in floating_props:
+            prop["control"].opacity = 1
+            prop["control"].scale = 1
+
+        page.update()
+
 
     def animate(tick):
         viewport_w = page.width or 1200

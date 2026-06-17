@@ -1,5 +1,7 @@
 import asyncio
+import math
 import random
+
 
 import flet as ft
 
@@ -162,10 +164,10 @@ def table(headers, rows):
         clip_behavior=ft.ClipBehavior.HARD_EDGE,
         content=ft.Column(
             [
-                ft.Container(bgcolor="#090d1a", content=header),
+                ft.Container(bgcolor="#1a2201", content=header),
                 *[
                     ft.Container(
-                        bgcolor=alpha("#0b112c", 0.42),
+                        bgcolor=alpha("#312700", 0.42),
                         border=border_only(top=border_side(1, alpha(WHITE, 0.05))),
                         content=row_control,
                     )
@@ -445,7 +447,7 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
         alignment=alignment_center(),
         border=border_all(1, alpha(LAVENDER, 0.75)),
         border_radius=6,
-        bgcolor=alpha("#0c081c", 0.72),
+        bgcolor=alpha("#1a1c08", 0.72),
         content=text("MENU", color=LAVENDER, size=12, weight=ft.FontWeight.W_800),
         on_click=toggle_menu,
     )
@@ -453,7 +455,7 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
     menu_layer.content = ft.Container(
         width=230,
         padding=12,
-        bgcolor=alpha("#0c081c", 0.95),
+        bgcolor=alpha("#1a1c08", 0.95),
         border=border_all(1, alpha(PURPLE, 0.6)),
         border_radius=10,
         content=ft.Column(
@@ -486,6 +488,25 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
         ),
     )
 
+    # Floating props (decorative animated icons) - parity with main-page.py
+    def floating_icon(src, size=52, opacity=0.72):
+        return ft.Container(
+            width=size,
+            height=size,
+            opacity=opacity,
+            content=ft.Image(src=src, width=size, height=size, fit="contain"),
+        )
+
+    prop_a = enter_container(content=floating_icon("Image-Assets/circuit_icon.svg", 54, 0.78), visible=False)
+    prop_b = enter_container(content=floating_icon("Image-Assets/connection_icon.svg", 44, 0.62), visible=False)
+    prop_c = enter_container(content=floating_icon("Image-Assets/cube_icon.svg", 64, 0.52), visible=False)
+
+    floating_props = [
+        {"control": prop_a, "x": 0.78, "y": 0.22, "amp_x": 16, "amp_y": 14, "phase": 0.3, "speed": 0.62, "w": 54},
+        {"control": prop_b, "x": 0.12, "y": 0.72, "amp_x": 12, "amp_y": 18, "phase": 1.9, "speed": 0.48, "w": 44},
+        {"control": prop_c, "x": 0.90, "y": 0.68, "amp_x": 20, "amp_y": 12, "phase": 3.1, "speed": 0.44, "w": 64},
+    ]
+
     root = ft.Container(
         expand=True,
         bgcolor=BG,
@@ -496,11 +517,14 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
         gradient=ft.RadialGradient(
             center=ft.Alignment(0.08, -0.18),
             radius=1.25,
-            colors=["#16103c", "#0b152c", BG],
+            colors=["#3c2f10", "#1c2c0b", BG],
         ),
         content=ft.Stack(
             [
                 *star_controls,
+                prop_a,
+                prop_b,
+                prop_c,
                 ft.Container(expand=True, alignment=alignment_center(), content=content),
                 hamburger_button,
                 ft.Container(content=menu_layer, right=58, top=76),
@@ -509,11 +533,26 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
         ),
     )
 
+
     async def reveal():
         await asyncio.sleep(0.08)
         hamburger_button.opacity = 1
         hamburger_button.scale = 1
+
+        for prop in floating_props:
+            prop["control"].visible = True
+            prop["control"].opacity = 0
+            prop["control"].scale = 0.82
+
         page.update()
+        await asyncio.sleep(0.06)
+
+        for prop in floating_props:
+            prop["control"].opacity = 1
+            prop["control"].scale = 1
+
+        page.update()
+
 
     def animate(tick):
         viewport_w = page.width or 1200
@@ -531,7 +570,19 @@ def build_projects_page(page: ft.Page, home_handler=None, qualifications_handler
             star["control"].left = star["x"]
             star["control"].top = star["y"]
 
+        # drift/rotate decorative props
+        for prop in floating_props:
+            control = prop["control"]
+            if not control.visible:
+                continue
+            drift_x = math.sin(tick * prop["speed"] + prop["phase"]) * prop["amp_x"]
+            drift_y = math.cos(tick * (prop["speed"] * 0.83) + prop["phase"]) * prop["amp_y"]
+            control.left = viewport_w * prop["x"] - prop["w"] / 2 + drift_x
+            control.top = viewport_h * prop["y"] - prop["w"] / 2 + drift_y
+            control.rotate = ft.Rotate(math.sin(tick * prop["speed"] + prop["phase"]) * 0.12)
+
     return root, reveal, animate
+
 
 
 async def main(page: ft.Page):
